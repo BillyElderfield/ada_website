@@ -1,0 +1,21 @@
+.sketchpad {
+    display: flex;
+    flex-direction: row;
+}
+
+.instructions {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 600px;
+}
+
+.instructions-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.instruction-text {
+    text-align: center;
+}

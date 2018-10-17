@@ -1,0 +1,129 @@
+body {
+    background-color: #6b717e;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    color: white;
+}
+
+.grid {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+}
+
+.primary {
+    flex: 1;
+    text-align: center;
+}
+
+.left, .right {
+    flex: 0 0 12em;
+}
+
+.left {
+    order: -1;
+}
+
+.right {
+    text-align: right;
+}
+
+.main-header {
+    background-image: linear-gradient(#FF325B, #4B0D18);
+}
+
+.header-top {
+    display: flex;
+    justify-content: center;
+}
+
+.main-header h1 {
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+
+#header-image {
+    height: 60px;
+    width: 100px;
+    margin-left: 5px;
+}
+
+.navbar {
+    display: flex;
+    justify-content: center;
+}
+
+.nav-button {
+    font-size: 25px;
+    height: 50px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.nav-button:hover {
+    background-image: linear-gradient(rgb(158, 42, 63), rgb(43, 9, 15))
+}
+
+.nav-button a:visited, .nav-button a:link  {
+    color: white;
+}
+
+footer {
+    background-color: rgb(31, 28, 28);
+    width: 100%;
+    text-align: center;
+}
+
+.post {
+    background-color: #c1cfda;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    margin-top: 25px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px 10px rgba(0,0,0,0.3)
+}
+
+.post-header {
+    display: flex;
+    justify-content: center;
+}
+
+.post-header-image {
+    height: 75px;
+    width: 75px;
+}
+
+.post-entry {
+    text-align: center;
+    margin-left: 10px;
+    display: flex;
+}
+
+.post-entry p {
+    margin: 5px;
+}
+
+.post-entry-image {
+    height: 200px;
+    width: 300px;
+}
+
+.post-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.post-links {
+    display: flex;
+    justify-content: space-evenly;
+}
