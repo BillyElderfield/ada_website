@@ -1,45 +1,54 @@
+class Paddle{
+    constructor(positionX, positionY){
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.score = 0;
+    }
+}
+
+class Ball{
+    constructor(canvasX, canvasY){
+        this.positionX = canvasX/2;
+        this.positionY = canvasY/4;
+        this.velocityX = 2;
+        this.velocityY = 2;
+    }
+}
+
 const canvasX = 400;
 const canvasY = 200;
-var ballPositionX = canvasX/2;
-var ballPositionY = canvasY/4;
-var ballVelocityX = 2;
-var ballVelocityY = 2;
-var bounceCount = 0;
-var paddle1PositionX = 10;
-var paddle1PositionY = canvasY/2 - 15;
-var paddle1Score = 0;
-var paddle2PositionX = canvasX - 20;
-var paddle2PositionY = canvasY/2 - 15;
-var paddle2Score = 0;
+var ball = new Ball(canvasX, canvasY);
+var paddle1 = new Paddle(10, canvasY/2 -15);
+var paddle2 = new Paddle(canvasX - 20, canvasY/2 -15);
 
 function setup() {
     createCanvas(canvasX, canvasY)
   }
   
-  function draw() {
+function draw() {
     background(100);
-    text(paddle1Score, 100, 30);
-    text(paddle2Score, 300, 30);
+    text(paddle1.score, 100, 30);
+    text(paddle2.score, 300, 30);
     if(!(key == "p")){
-        ballPositionX += ballVelocityX;
-        ballPositionY += ballVelocityY;
-        if((ballPositionX <= paddle1PositionX +10) && (ballPositionX >= paddle1PositionX) &&
-         (ballPositionY <= paddle1PositionY + 30) && (ballPositionY >= paddle1PositionY)){
+        ball.positionX += ball.velocityX;
+        ball.positionY += ball.velocityY;
+        if((ball.positionX <= paddle1.positionX +10) && (ball.positionX >= paddle1.positionX) &&
+         (ball.positionY <= paddle1.positionY + 30) && (ball.positionY >= paddle1.positionY)){
             invertMovement("X");
          }
-        else if((ballPositionX <= paddle2PositionX) && (ballPositionX >= paddle2PositionX -10) &&
-        (ballPositionY <= paddle2PositionY + 40) && (ballPositionY >= paddle2PositionY)){
+        else if((ball.positionX <= paddle2.positionX) && (ball.positionX >= paddle2.positionX -10) &&
+        (ball.positionY <= paddle2.positionY + 40) && (ball.positionY >= paddle2.positionY)){
             invertMovement("X");
         }
-        else if(ballPositionX >= canvasX - 10){
+        else if(ball.positionX >= canvasX - 10){
             resetBall(-2);
-            paddle1Score ++;
+            paddle1.score ++;
         }
-        else if(ballPositionX <= 0){
+        else if(ball.positionX <= 0){
             resetBall(2);
-            paddle2Score ++;
+            paddle2.score ++;
         }
-        else if(ballPositionY >= canvasY - 10 | ballPositionY <= 0){
+        else if(ball.positionY >= canvasY - 10 | ball.positionY <= 0){
             invertMovement("Y");
         }
     }
@@ -48,44 +57,44 @@ function setup() {
     }
     if(keyIsPressed){
         if(key == "w"){
-            paddle1PositionY -= 2;
+            paddle1.positionY -= 2;
         }
         else if(key == "d"){
-            paddle1PositionY += 2;
+            paddle1.positionY += 2;
         }
         else if(key == "o"){
-            paddle2PositionY -= 2;
+            paddle2.positionY -= 2;
         }
         else if(key == "k"){
-            paddle2PositionY += 2;
+            paddle2.positionY += 2;
         }
         else if(key == "r"){
             restart();
         }
     }
-    rect(ballPositionX, ballPositionY, 10, 10);
-    rect(paddle1PositionX, paddle1PositionY, 10, 30)
-    rect(paddle2PositionX, paddle2PositionY, 10, 30)
+    rect(ball.positionX, ball.positionY, 10, 10);
+    rect(paddle1.positionX, paddle1.positionY, 10, 30)
+    rect(paddle2.positionX, paddle2.positionY, 10, 30)
     rect(canvasX/2, 0, 1, canvasY)
 }
 
 function invertMovement(plane){
     if(plane == "X"){
-        ballVelocityX -= ballVelocityX * 2;
+        ball.velocityX -= ball.velocityX * 2;
     }
     else{
-        ballVelocityY -= ballVelocityY * 2;
+        ball.velocityY -= ball.velocityY * 2;
     }
 }
 
 function resetBall(direction){
-    ballVelocityX = direction
-    ballPositionX = canvasX / 2;
-    ballpositionY = Math.floor(Math.random() * canvasY);
+    ball.velocityX = direction
+    ball.positionX = canvasX / 2;
+    ball.positionY = Math.floor(Math.random() * canvasY);
 }
 
 function restart(){
-    paddle1Score = 0;
-    paddle2Score = 0;
+    paddle1.score = 0;
+    paddle2.score = 0;
     resetBall(2);
 }
