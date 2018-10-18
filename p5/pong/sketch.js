@@ -35,11 +35,11 @@ function draw() {
     if(!(key == "p")){
         ball.positionX += ball.velocityX;
         ball.positionY += ball.velocityY;
-        if((ball.positionX <= paddle1.positionX +5) && (ball.positionX >= paddle1.positionX) &&
+        if((ball.positionX <= paddle1.positionX +5) && (ball.positionX >= paddle1.positionX + 3) &&
          (ball.positionY <= paddle1.positionY + 30) && (ball.positionY >= paddle1.positionY)){
             invertMovement("X");
          }
-        else if((ball.positionX <= paddle2.positionX) && (ball.positionX >= paddle2.positionX -5) &&
+        else if((ball.positionX <= paddle2.positionX) && (ball.positionX >= paddle2.positionX - 10) &&
         (ball.positionY <= paddle2.positionY + 40) && (ball.positionY >= paddle2.positionY)){
             invertMovement("X");
         }
@@ -67,9 +67,9 @@ function draw() {
 function paddleMove(paddle){
     switch(paddle.direction){
         case "up":
-            return paddle.positionY -= 2;
+            return paddle.positionY -= 3;
         case "down":
-            return paddle.positionY += 2;
+            return paddle.positionY += 3;
     }
 }
 
@@ -110,7 +110,7 @@ function invertMovement(plane){
 function resetBall(direction){
     ball.velocityX = direction
     ball.positionX = canvasX / 2;
-    ball.positionY = Math.floor(Math.random() * canvasY);
+    ball.positionY = Math.floor(Math.random() * (canvasY + 1) ) + 10;
 }
 
 function restart(){
