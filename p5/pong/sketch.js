@@ -2,6 +2,7 @@ class Paddle{
     constructor(positionX, positionY){
         this.positionX = positionX;
         this.positionY = positionY;
+        this.direction = "none";
         this.score = 0;
     }
 }
@@ -29,14 +30,16 @@ function draw() {
     background(100);
     text(paddle1.score, 100, 30);
     text(paddle2.score, 300, 30);
+    paddleMove(paddle1);
+    paddleMove(paddle2);
     if(!(key == "p")){
         ball.positionX += ball.velocityX;
         ball.positionY += ball.velocityY;
-        if((ball.positionX <= paddle1.positionX +10) && (ball.positionX >= paddle1.positionX) &&
+        if((ball.positionX <= paddle1.positionX +5) && (ball.positionX >= paddle1.positionX) &&
          (ball.positionY <= paddle1.positionY + 30) && (ball.positionY >= paddle1.positionY)){
             invertMovement("X");
          }
-        else if((ball.positionX <= paddle2.positionX) && (ball.positionX >= paddle2.positionX -10) &&
+        else if((ball.positionX <= paddle2.positionX) && (ball.positionX >= paddle2.positionX -5) &&
         (ball.positionY <= paddle2.positionY + 40) && (ball.positionY >= paddle2.positionY)){
             invertMovement("X");
         }
@@ -55,27 +58,44 @@ function draw() {
     else{
         text("\t\t\t\t\tGame paused.\n Press any button to continue.", 125, 90)
     }
-    if(keyIsPressed){
-        if(key == "w"){
-            paddle1.positionY -= 2;
-        }
-        else if(key == "d"){
-            paddle1.positionY += 2;
-        }
-        else if(key == "o"){
-            paddle2.positionY -= 2;
-        }
-        else if(key == "k"){
-            paddle2.positionY += 2;
-        }
-        else if(key == "r"){
-            restart();
-        }
-    }
     rect(ball.positionX, ball.positionY, 10, 10);
-    rect(paddle1.positionX, paddle1.positionY, 10, 30)
-    rect(paddle2.positionX, paddle2.positionY, 10, 30)
+    rect(paddle1.positionX, paddle1.positionY, 5, 30)
+    rect(paddle2.positionX, paddle2.positionY, 5, 30)
     rect(canvasX/2, 0, 1, canvasY)
+}
+
+function paddleMove(paddle){
+    switch(paddle.direction){
+        case "up":
+            return paddle.positionY -= 2;
+        case "down":
+            return paddle.positionY += 2;
+    }
+}
+
+function keyPressed(){
+    switch(key){
+        case "w":
+            return paddle1.direction = "up";
+        case "d":
+            return paddle1.direction = "down";
+        case "o":
+            return paddle2.direction = "up";
+        case "k":
+            return paddle2.direction = "down";
+        case "r":
+            return restart();
+    }
+}
+
+
+function keyReleased(){
+    if((key == "w" && paddle1.direction == "up")||(key == "d" && paddle1.direction == "down")){
+        paddle1.direction = "none";
+    }
+    else if((key == "o" && paddle2.direction == "up")||(key == "k" && paddle2.direction == "down")){
+        paddle2.direction = "none";
+    }
 }
 
 function invertMovement(plane){
