@@ -7,8 +7,10 @@ class Player{
         this.down = false;
         this.left = false;
         this.right = false;
-        this.speed = 2;
+        this.velocity = 2;
         this.lookAngle = 0;
+        this.relativeX = 0;
+        this.relativeY = 0;
     }
 
     update(){
@@ -21,49 +23,112 @@ class Player{
         push();
         translate(this.positionX, this.positionY);
         rotate(this.lookAngle);
+        fill("black");
+        stroke("black");
         ellipse(0, 0, this.size, this.size);
         rect(0 - (this.size / 6), 0, 5, 15);
         pop();
-        stroke("white");
     }
 
     move(){
         if(this.up){
-            this.positionY -= this.speed;
+            this.positionY -= this.velocity;
         }
         if(this.down){
-            this.positionY += this.speed;
+            this.positionY += this.velocity;
         }
         if(this.left){
-            this.positionX -= this.speed;
+            this.positionX -= this.velocity;
         }
         if(this.right){
-            this.positionX += this.speed;
+            this.positionX += this.velocity;
         }
     }
 
     turn(){
-        let x = mouseX - this.positionX;
-        let y = this.positionY - mouseY;
-        let relativeAngle = Math.asin(sqrt(x ** 2) / sqrt((x)**2 + ((y)**2)))
-        if(x < 0 && y < 0){
-            this.lookAngle = relativeAngle
+        this.relativeX = mouseX - this.positionX;
+        this.relativeY = this.positionY - mouseY;
+        let relativeAngle = Math.asin(sqrt(this.relativeX ** 2) / sqrt((this.relativeX)**2 + ((this.relativeY)**2)))
+        if(this.relativeX < 0 && this.relativeY < 0){
+            this.lookAngle = relativeAngle;
         }
-        else if(x < 0 && y > 0){
-            this.lookAngle = Math.PI - relativeAngle
+        else if(this.relativeX < 0 && this.relativeY > 0){
+            this.lookAngle = Math.PI - relativeAngle;
         }
-        else if(x > 0, y > 0){
-            this.lookAngle = Math.PI + relativeAngle
+        else if(this.relativeX > 0, this.relativeY > 0){
+            this.lookAngle = Math.PI + relativeAngle;
         }
-        else if(x > 0, y < 0){
-            this.lookAngle = Math.PI * 2 - relativeAngle
+        else if(this.relativeX > 0, this.relativeY < 0){
+            this.lookAngle = Math.PI * 2 - relativeAngle;
         }
+    }
+
+    shoot(){
+        let lookAngleDeg = this.lookAngle * (180 / Math.PI);
+        if(lookAngleDeg >= 22.5 && lookAngleDeg < 67.5){
+            var velocityX = -5;
+            var velocityY = -5;
+        }
+        else if(lookAngleDeg >= 67.5 && lookAngleDeg < 112.5){
+            var velocityX = -5;
+            var velocityY = 0;
+        }
+        else if(lookAngleDeg >= 112.5 && lookAngleDeg < 157.5){
+            var velocityX = -5;
+            var velocityY = 5;
+        }
+        else if(lookAngleDeg >= 157.5 && lookAngleDeg < 202.5){
+            var velocityX = 0;
+            var velocityY = 5;
+        }
+        else if(lookAngleDeg >= 202.5 && lookAngleDeg < 247.5){
+            var velocityX = 5;
+            var velocityY = 5;
+        }
+        else if(lookAngleDeg >= 247.5 && lookAngleDeg < 292.5){
+            var velocityX = 5;
+            var velocityY = 0;
+        }
+        else if(lookAngleDeg >= 112.5 && lookAngleDeg < 337.5){
+            var velocityX = 5;
+            var velocityY = -5;
+        }
+        else if(lookAngleDeg >= 337.5 && lookAngleDeg <= 360 || lookAngleDeg >= 0 && lookAngleDeg <= 22.5 ){
+            var velocityX = 0;
+            var velocityY = -5;
+        }
+        bullets.push(new Bullet(this.positionX, this.positionY, velocityX, velocityY));
+    }
+}
+
+class Bullet{
+    constructor(positionX, positionY, velocityX, velocityY){
+        this.positionX = positionX;
+        this.positionY = positionY;
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+    }
+
+    update(){
+        this.move();
+        this.render();
+    }
+
+    render(){
+        ellipse(this.positionX, this.positionY, 5, 5);
+        fill("black");
+    }
+
+    move(){
+        this.positionX += this.velocityX;
+        this.positionY -= this.velocityY;
     }
 }
 
 const canvasX = 600;
-const canvasY = 300;
+const canvasY = 600;
 var player = new Player();
+var bullets = [];
 
 function setup(){
     createCanvas(canvasX, canvasY)
@@ -72,6 +137,9 @@ function setup(){
 function draw(){
     background(100);
     player.update();
+    for(let i = 0; i < bullets.length; i++){
+        bullets[i].update();
+    }
 }
 
 function keyPressed(){
@@ -81,6 +149,10 @@ function keyPressed(){
 
 function keyReleased(){
     changeMovementState();
+}
+
+function mousePressed(){
+    player.shoot();
 }
 
 function changeMovementState(){
