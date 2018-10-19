@@ -44,7 +44,7 @@ class Player{
 }
 
 class Bullet{
-    constructor(positionX, positionY, velocityX, velocityY){
+    constructor(positionX, positionY, velocityX, velocityY, canvasX, canvasY){
         this.positionX = positionX;
         this.positionY = positionY;
         this.velocityX = velocityX;
@@ -64,6 +64,18 @@ class Bullet{
     move(){
         this.positionX += this.velocityX;
         this.positionY -= this.velocityY;
+    }
+
+    checkInBounds(){
+        if(this.positionX < 0 || this.positionX > canvasX){
+            return false;
+        }
+        else if(this.positionY < 0 || this.positionY > canvasY){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 }
 
@@ -118,8 +130,12 @@ class BasicZombie{
 const canvasX = 600;
 const canvasY = 600;
 var player = new Player(canvasX, canvasY);
-var basicZombie = new BasicZombie(canvasX, canvasY);
 var bullets = [];
+var bulletHitboxes = [];
+var deadBullets = [];
+var zombies = [new BasicZombie(canvasX, canvasY), new BasicZombie(canvasX, canvasY)];
+var zombieHitboxes = [];
+var deadZombies = [];
 
 function setup(){
     createCanvas(canvasX, canvasY)
@@ -127,17 +143,32 @@ function setup(){
   
 function draw(){
     background(100);
+    bulletHitboxes = [];
+    zombieHitboxes = [];
     player.update();
-    basicZombie.update(player.positionX, player.positionY);
+    for(let i = 0; i < zombies.length; i++){
+        zombies[i].update(player.positionX, player.positionY);
+        zombieHitboxes.push([zombies[i].positionX, zombies[i].positionX])
+    }
     for(let i = 0; i < bullets.length; i++){
         bullets[i].update();
+        if(!bullets[i].checkInBounds()) deadBullets.push(i);
+        bulletHitboxes.push([bullets[i].positionX, bullets[i].positionX]);
     }
+    deadBullets.sort();
+    let count = 0;
+    for(let i = 0; i < deadBullets.length; i++){
+        bullets.splice(deadBullets[i + count], 1);
+        count ++;
+    }
+    deadBullets = [];
+    console.log(zombieHitboxes);
+    console.log(bulletHitboxes);
 }
 
 function keyPressed(){
     changeMovementState();
 }
-
 
 function keyReleased(){
     changeMovementState();
@@ -175,9 +206,6 @@ function track(fromX, fromY, toX, toY){
     }
     else if(relativeX > 0, relativeY < 0){
         return Math.PI * 2 - relativeAngle;
-    }
-    else{
-        return "cats";
     }
 }
 
