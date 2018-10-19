@@ -9,8 +9,6 @@ class Player{
         this.right = false;
         this.velocity = 2;
         this.lookAngle = 0;
-        this.relativeX = 0;
-        this.relativeY = 0;
     }
 
     update(){
@@ -46,57 +44,39 @@ class Player{
     }
 
     turn(){
-        this.relativeX = mouseX - this.positionX;
-        this.relativeY = this.positionY - mouseY;
-        let relativeAngle = Math.asin(sqrt(this.relativeX ** 2) / sqrt((this.relativeX)**2 + ((this.relativeY)**2)))
-        if(this.relativeX < 0 && this.relativeY < 0){
+        let relativeX = mouseX - this.positionX;
+        let relativeY = this.positionY - mouseY;
+        let relativeAngle = Math.asin(sqrt(relativeX ** 2) / sqrt((relativeX)**2 + ((relativeY)**2)))
+        if(relativeX < 0 && relativeY < 0){
             this.lookAngle = relativeAngle;
         }
-        else if(this.relativeX < 0 && this.relativeY > 0){
+        else if(relativeX < 0 && relativeY > 0){
             this.lookAngle = Math.PI - relativeAngle;
         }
-        else if(this.relativeX > 0, this.relativeY > 0){
+        else if(relativeX > 0, relativeY > 0){
             this.lookAngle = Math.PI + relativeAngle;
         }
-        else if(this.relativeX > 0, this.relativeY < 0){
+        else if(relativeX > 0, relativeY < 0){
             this.lookAngle = Math.PI * 2 - relativeAngle;
         }
     }
 
     shoot(){
+        // v = sqrt(vv**2 + vh**2)
         let lookAngleDeg = this.lookAngle * (180 / Math.PI);
-        if(lookAngleDeg >= 22.5 && lookAngleDeg < 67.5){
-            var velocityX = -5;
-            var velocityY = -5;
+        console.log(lookAngleDeg);
+        let magnitudeY = 5 * Math.cos(this.lookAngle);
+        if(this.lookAngle >= 0 && this.lookAngle <= Math.PI){
+            var velocityY = -magnitudeY;
+            var velocityX = -magnitudeX(velocityY);
         }
-        else if(lookAngleDeg >= 67.5 && lookAngleDeg < 112.5){
-            var velocityX = -5;
-            var velocityY = 0;
+        else if(this.lookAngle > Math.PI && this.lookAngle <= Math.PI * 2){
+            var velocityY = -magnitudeY;
+            var velocityX = magnitudeX(velocityY);
         }
-        else if(lookAngleDeg >= 112.5 && lookAngleDeg < 157.5){
-            var velocityX = -5;
-            var velocityY = 5;
-        }
-        else if(lookAngleDeg >= 157.5 && lookAngleDeg < 202.5){
-            var velocityX = 0;
-            var velocityY = 5;
-        }
-        else if(lookAngleDeg >= 202.5 && lookAngleDeg < 247.5){
-            var velocityX = 5;
-            var velocityY = 5;
-        }
-        else if(lookAngleDeg >= 247.5 && lookAngleDeg < 292.5){
-            var velocityX = 5;
-            var velocityY = 0;
-        }
-        else if(lookAngleDeg >= 112.5 && lookAngleDeg < 337.5){
-            var velocityX = 5;
-            var velocityY = -5;
-        }
-        else if(lookAngleDeg >= 337.5 && lookAngleDeg <= 360 || lookAngleDeg >= 0 && lookAngleDeg <= 22.5 ){
-            var velocityX = 0;
-            var velocityY = -5;
-        }
+        console.log(velocityX);
+        console.log(velocityY);
+        console.log(sqrt(velocityX**2 + velocityY **2))
         bullets.push(new Bullet(this.positionX, this.positionY, velocityX, velocityY));
     }
 }
@@ -166,4 +146,8 @@ function changeMovementState(){
         case "d":
             return player.right = !player.right;
     }
+}
+
+function magnitudeX(y){
+    return sqrt(25 - (y ** 2));
 }
