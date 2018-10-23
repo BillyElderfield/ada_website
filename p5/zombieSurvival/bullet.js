@@ -15,7 +15,7 @@ class Bullet{
     render(){
         push();
         fill("black");
-        ellipse(this.positionX, this.positionY, 5, 5);
+        ellipse(this.positionX - this.velocityX, this.positionY + this.velocityY, 5, 5);
         pop();
     }
 

@@ -137,8 +137,8 @@ function calculateVelocities(trackAngle,  maxVelocity){
 function updateZombies(){
     for(let i = 0; i < zombies.length; i++){
         zombies[i].update(player.positionX, player.positionY);
-        if(player.positionX <= (zombies[i].positionX + zombies[i].size/2) && player.positionX >= (zombies[i].positionX - zombies[i].size/2)
-            && player.positionY >= (zombies[i].positionY - zombies[i].size/2) && player.positionY <= (zombies[i].positionY + zombies[i].size/2)){
+        if (checkCollision(player.positionX, player.positionY, zombies[i].positionX,
+            zombies[i].positionY, zombies[i].size, "circle")){
             for(let i = 0; i < zombies.length; i++){
                 zombies[i].moving = false;
             }
@@ -158,8 +158,8 @@ function updateBullets(){
             case "endless":
             case "survival":
                 for(let zombie = 0; zombie < zombies.length; zombie++){
-                    if(bullets[i].positionX <= (zombies[zombie].positionX + zombies[zombie].size/2) && bullets[i].positionX >= (zombies[zombie].positionX - zombies[zombie].size/2)
-                    && bullets[i].positionY >= (zombies[zombie].positionY - zombies[zombie].size/2) && bullets[i].positionY <= (zombies[zombie].positionY + zombies[zombie].size/2)){
+                    if (checkCollision(bullets[i].positionX, bullets[i].positionY, zombies[zombie].positionX,
+                         zombies[zombie].positionY, zombies[zombie].size, "circle")){
                         zombies[zombie].hp -= 1;
                         if (zombies[zombie].hp <= 0){
                             deadZombies.push(zombie);
@@ -171,14 +171,43 @@ function updateBullets(){
                 break;
             case "menu":
                 for(let option = 0; option < optionButtons.length; option++){
-                    if(bullets[i].positionX <= (optionButtons[option].positionX + optionButtons[option].size) && bullets[i].positionX >= (optionButtons[option].positionX)
-                    && bullets[i].positionY >= (optionButtons[option].positionY) && bullets[i].positionY <= (optionButtons[option].positionY + optionButtons[option].size)){
+                    if (checkCollision(bullets[i].positionX, bullets[i].positionY, optionButtons[option].positionX,
+                         optionButtons[option].positionY, optionButtons[option].size, "square")){
+                        console.log("2")
                         optionButtons[option].changeState();
                         deadBullets.push(i);
                     }
                 }
         }
         bullets[i].update();
+    }
+}
+
+function checkCollision(obj1X, obj1Y, obj2X, obj2Y, obj2Size, obj2Shape){
+    switch(obj2Shape){
+        case "square":
+            if(obj1X <= (obj2X + obj2Size) && obj1X >= (obj2X)
+            && obj1Y >= (obj2Y) && obj1Y <= (obj2Y + obj2Size)){
+                console.log("3");
+                return true;
+            }
+            else{
+                return false;
+            }
+        case "circle":
+            if(sqrt((obj1X - obj2X)**2 + (obj1Y - obj2Y)**2) <= obj2Size/2){
+                return true;
+            }
+            else{
+                return false;
+            }
+            // if(obj1X <= (obj2X + obj2Size/2) && obj1X >= (obj2X - obj2Size/2)
+            // && obj1Y >= (obj2Y - obj2Size/2) && obj1Y <= (obj2Y + obj2Size/2)){
+            //     return true;
+            // }
+            // else{
+            //     return false;
+            // }
     }
 }
 

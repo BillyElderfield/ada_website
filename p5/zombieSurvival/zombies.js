@@ -1,17 +1,13 @@
 class BasicZombie{
     constructor(canvasX, canvasY){
         let randNum = Math.random();
-        if (randNum <= 0.25){
-            this.positionX = 0;
+        if (randNum <= 0.5){
             this.positionY = Math.random() * canvasY;
-        }
-        else if (randNum <= 0.5){
-            this.positionX = canvasX;
-            this.positionY = Math.random() * canvasY;
+            randNum <= 0.25 ? this.positionX = 0 : this.positionX = canvasX;
         }
         else{
             this.positionX = Math.random() * canvasX;
-            randNum <= 0.75 ? this.positionY = 0: this.positionY = canvasY;
+            randNum <= 0.75 ? this.positionY = 0 : this.positionY = canvasY;
         }
         this.velocityX = 0;
         this.velocityY = 0;
