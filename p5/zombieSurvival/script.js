@@ -52,10 +52,10 @@ function draw(){
             deadBullets = [];
             deadZombies = [];
             let currnetTime = performance.now();
-            if(currnetTime - respawnTimer > 1000){
+            if(currnetTime - respawnTimer > 500){
                 let randNum = Math.random()
                 if (!options.spZombies || randNum < 0.85){
-                    zombies.push(new BigZombie(canvasX, canvasY));
+                    zombies.push(new BasicZombie(canvasX, canvasY));
                 }
                 else if (randNum < 0.95){
                     zombies.push(new Sprinter(canvasX, canvasY));
