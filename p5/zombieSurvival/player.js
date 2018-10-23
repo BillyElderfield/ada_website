@@ -3,6 +3,8 @@ class Player{
         this.positionX = canvasX / 2;
         this.positionY = canvasY / 2;
         this.size = 20;
+        this.colour = "black";
+        this.shape = "circle";
         this.up = false;
         this.down = false;
         this.left = false;
@@ -24,7 +26,7 @@ class Player{
         push();
         translate(this.positionX, this.positionY);
         rotate(this.lookAngle);
-        fill("black");
+        fill(this.colour);
         noStroke();
         ellipse(0, 0, this.size, this.size);
         rect(0 - (this.size / 6), 0, 5, 15);

@@ -15,12 +15,12 @@ class BasicZombie{
         this.moving = true;
         this.size = 20;
         this.velocity = 1;
+        this.shape = "circle";
         this.colour = "green";
         this.hp = 1;
     }
 
-    update(playerPositionX, playerPositionY){
-        this.lookAngle = track(this.positionX, this.positionY, playerPositionX, playerPositionY);
+    update(){
         this.trackPlayer();
         if(this.moving) this.move();
         this.render();
@@ -38,12 +38,12 @@ class BasicZombie{
         this.positionY -= this.velocityY;
     }
 
-    trackPlayer(playerPositionX, playerPositionY){
+    trackPlayer(){
+        this.lookAngle = track(this.positionX, this.positionY, player.positionX, player.positionY);
         let velocities = calculateVelocities(this.lookAngle, this.velocity);
         this.velocityX = velocities[0];
         this.velocityY = velocities[1];
     }
-
 }
 
 class Sprinter extends BasicZombie{

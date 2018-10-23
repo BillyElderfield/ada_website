@@ -3,6 +3,7 @@ class Option{
         this.positionX = positionX;
         this.positionY = positionY;
         this.size = 10;
+        this.shape = "square";
         this.state = true;
         this.option = option;
     }

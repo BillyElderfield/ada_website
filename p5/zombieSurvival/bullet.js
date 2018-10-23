@@ -5,6 +5,7 @@ class Bullet{
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.moving = true;
+        this.shape = "circle";
     }
 
     update(){

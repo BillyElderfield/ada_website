@@ -13,10 +13,10 @@ var kills = 0;
 var startTime = 0;
 var currentTime = 0;
 var respawnTimer = 0;
+var respawnRate = 500;
 
 function setup(){
     createCanvas(canvasX, canvasY)
-    textAlign(CENTER);
   }
   
 function draw(){
@@ -24,6 +24,7 @@ function draw(){
     background(100);
     switch(gameState){
         case "menu":
+            textAlign(CENTER);
             textSize(15);
             text("Use WASD to move and the mouse to shoot.", canvasX/2, canvasY/5);
             text("Choose game mode and options:", canvasX/2, canvasY/4);
@@ -52,19 +53,7 @@ function draw(){
             deadBullets = [];
             deadZombies = [];
             let currnetTime = performance.now();
-            if(currnetTime - respawnTimer > 500){
-                let randNum = Math.random()
-                if (!options.spZombies || randNum < 0.85){
-                    zombies.push(new BasicZombie(canvasX, canvasY));
-                }
-                else if (randNum < 0.95){
-                    zombies.push(new Sprinter(canvasX, canvasY));
-                }
-                else{
-                    zombies.push(new BigZombie(canvasX, canvasY));
-                }
-                respawnTimer = performance.now();
-            }
+            if(currnetTime - respawnTimer > respawnRate) spawnZombie();
             return;
         case "over":
             player.update();
@@ -124,21 +113,15 @@ function track(fromX, fromY, toX, toY){
 
 //Calculates the X and Y component velocities needed to go in the angle and with the resultant velocity specified.
 function calculateVelocities(trackAngle,  maxVelocity){
+    let velocityX = -maxVelocity * Math.sin(trackAngle);
     let velocityY = -maxVelocity * Math.cos(trackAngle);
-    if(trackAngle >= 0 && trackAngle <= Math.PI){
-        var velocityX = -sqrt((maxVelocity ** 2) - (velocityY ** 2));
-    }
-    else if(trackAngle > Math.PI && trackAngle <= Math.PI * 2){
-        var velocityX = sqrt((maxVelocity ** 2) - (velocityY ** 2));
-    }
     return [velocityX, velocityY];
 }
 
 function updateZombies(){
     for(let i = 0; i < zombies.length; i++){
         zombies[i].update(player.positionX, player.positionY);
-        if (checkCollision(player.positionX, player.positionY, zombies[i].positionX,
-            zombies[i].positionY, zombies[i].size, "circle")){
+        if (checkCollision(player, zombies[i])){
             for(let i = 0; i < zombies.length; i++){
                 zombies[i].moving = false;
             }
@@ -154,61 +137,57 @@ function updateZombies(){
 function updateBullets(){
     for(let i = 0; i < bullets.length; i++){
         if(!bullets[i].checkInBounds()) deadBullets.push(i);
-        switch(gameState){
-            case "endless":
-            case "survival":
-                for(let zombie = 0; zombie < zombies.length; zombie++){
-                    if (checkCollision(bullets[i].positionX, bullets[i].positionY, zombies[zombie].positionX,
-                         zombies[zombie].positionY, zombies[zombie].size, "circle")){
-                        zombies[zombie].hp -= 1;
-                        if (zombies[zombie].hp <= 0){
-                            deadZombies.push(zombie);
-                            kills ++;
+        else{
+            switch(gameState){
+                case "endless":
+                case "survival":
+                    for(let zombie = 0; zombie < zombies.length; zombie++){
+                        if (checkCollision(bullets[i], zombies[zombie])){
+                            zombies[zombie].hp -= 1;
+                            if (zombies[zombie].hp <= 0){
+                                deadZombies.push(zombie);
+                                kills ++;
+                            }
+                            deadBullets.push(i);
                         }
-                        deadBullets.push(i);
                     }
-                }
-                break;
-            case "menu":
-                for(let option = 0; option < optionButtons.length; option++){
-                    if (checkCollision(bullets[i].positionX, bullets[i].positionY, optionButtons[option].positionX,
-                         optionButtons[option].positionY, optionButtons[option].size, "square")){
-                        console.log("2")
-                        optionButtons[option].changeState();
-                        deadBullets.push(i);
+                    break;
+                case "menu":
+                    for(let option = 0; option < optionButtons.length; option++){
+                        if(checkCollision(bullets[i], optionButtons[option])){
+                            optionButtons[option].changeState();
+                            deadBullets.push(i);
+                        }
                     }
-                }
+            }
         }
         bullets[i].update();
     }
 }
 
-function checkCollision(obj1X, obj1Y, obj2X, obj2Y, obj2Size, obj2Shape){
-    switch(obj2Shape){
+function checkCollision(obj1, obj2){
+    switch(obj2.shape){
         case "square":
-            if(obj1X <= (obj2X + obj2Size) && obj1X >= (obj2X)
-            && obj1Y >= (obj2Y) && obj1Y <= (obj2Y + obj2Size)){
-                console.log("3");
-                return true;
-            }
-            else{
-                return false;
-            }
+            if(obj1.positionX <= (obj2.positionX + obj2.size) && obj1.positionX >= (obj2.positionX)
+            && obj1.positionY >= (obj2.positionY) && obj1.positionY <= (obj2.positionY + obj2.size)) return true; else return false;
         case "circle":
-            if(sqrt((obj1X - obj2X)**2 + (obj1Y - obj2Y)**2) <= obj2Size/2){
-                return true;
-            }
-            else{
-                return false;
-            }
-            // if(obj1X <= (obj2X + obj2Size/2) && obj1X >= (obj2X - obj2Size/2)
-            // && obj1Y >= (obj2Y - obj2Size/2) && obj1Y <= (obj2Y + obj2Size/2)){
-            //     return true;
-            // }
-            // else{
-            //     return false;
-            // }
+            if(sqrt((obj1.positionX - obj2.positionX)**2 + (obj1.positionY - obj2.positionY)**2) <= obj2.size/2) return true; else return false;
     }
+}
+
+function spawnZombie(){
+    let randNum = Math.random()
+        if (!options.spZombies || randNum < 0.85){
+            zombies.push(new BasicZombie(canvasX, canvasY));
+        }
+        else if (randNum < 0.95){
+            zombies.push(new Sprinter(canvasX, canvasY));
+        }
+        else{
+            zombies.push(new BigZombie(canvasX, canvasY));
+        }
+        if (options.irSpeed) respawnRate --;
+        respawnTimer = performance.now();
 }
 
 function updateOptions(){
