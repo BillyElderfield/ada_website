@@ -2,7 +2,7 @@ const canvasX = 600;
 const canvasY = 600;
 var gameState = "menu";
 var options = {spZombies: true, irSpeed: true}
-var optionButtons = [new GameOption(canvasX/3 + 30, canvasY/3 - 15, "endless"), new GameOption(canvasX/3 + 155, canvasY/3 - 15, "survival"), new Option(canvasX/3 + 20, canvasY/3 + 15), new Option(canvasX/3 + 20, canvasY/3 + 50)];
+var optionButtons = [new GameOption(canvasX/3 + 30, canvasY/3 - 15, "endless"), new GameOption(canvasX/3 + 155, canvasY/3 - 15, "survival"), new Option(canvasX/3 + 20, canvasY/3 + 15, "spZombies"), new Option(canvasX/3 + 20, canvasY/3 + 50, "irSpeed")];
 var player = new Player(canvasX, canvasY);
 var bullets = [];
 var deadBullets = [];
@@ -10,7 +10,9 @@ var zombies = [new BasicZombie(canvasX, canvasY)];
 var deadZombies = [];
 var wave = 1;
 var kills = 0;
-var startTime = performance.now();
+var startTime = 0;
+var currentTime = 0;
+var respawnTimer = 0;
 
 function setup(){
     createCanvas(canvasX, canvasY)
@@ -18,6 +20,7 @@ function setup(){
   }
   
 function draw(){
+    let endTime = performance.now();
     background(100);
     switch(gameState){
         case "menu":
@@ -37,9 +40,11 @@ function draw(){
             return;
         case "endless":
             player.update();
+            textAlign(LEFT);
             textSize(15);
-            text("Wave: " + wave, 35, 25);
-            text("kills: " + kills, 30, 40);
+            currentTime = endTime - startTime;
+            text("Time: " + (formatTime(currentTime)), 10, 25);
+            text("kills: " + kills, 10, 40);
             updateZombies();
             updateBullets();
             removeDeadBullets();
@@ -47,10 +52,28 @@ function draw(){
             deadBullets = [];
             deadZombies = [];
             let currnetTime = performance.now();
-            if(currnetTime - startTime > 500){
-                zombies.push(new BasicZombie(canvasX, canvasY));
-                startTime = performance.now();
+            if(currnetTime - respawnTimer > 500){
+                let randNum = Math.random()
+                if (!options.spZombies || randNum < 0.85){
+                    zombies.push(new BasicZombie(canvasX, canvasY));
+                }
+                else if (randNum < 0.95){
+                    zombies.push(new Sprinter(canvasX, canvasY));
+                }
+                else{
+                    zombies.push(new BigZombie(canvasX, canvasY));
+                }
+                respawnTimer = performance.now();
             }
+            return;
+        case "over":
+            player.update();
+            updateZombies();
+            updateBullets();
+            textSize(15);
+            text("Wave: " + (formatTime(currentTime)), 10, 25);
+            text("kills: " + kills, 10, 40);
+            text("Game Over", canvasX/2 - 30, canvasY/2 - 20);
             return;
     }
 }
@@ -100,7 +123,7 @@ function track(fromX, fromY, toX, toY){
 }
 
 //Calculates the X and Y component velocities needed to go in the angle and with the resultant velocity specified.
-function calculateVelocities(trackAngle, maxVelocity){
+function calculateVelocities(trackAngle,  maxVelocity){
     let velocityY = -maxVelocity * Math.cos(trackAngle);
     if(trackAngle >= 0 && trackAngle <= Math.PI){
         var velocityX = -sqrt((maxVelocity ** 2) - (velocityY ** 2));
@@ -114,8 +137,8 @@ function calculateVelocities(trackAngle, maxVelocity){
 function updateZombies(){
     for(let i = 0; i < zombies.length; i++){
         zombies[i].update(player.positionX, player.positionY);
-        if(player.positionX <= (zombies[i].positionX + 10) && player.positionX >= (zombies[i].positionX - 10)
-            && player.positionY >= (zombies[i].positionY - 10) && player.positionY <= (zombies[i].positionY + 10)){
+        if(player.positionX <= (zombies[i].positionX + zombies[i].size/2) && player.positionX >= (zombies[i].positionX - zombies[i].size/2)
+            && player.positionY >= (zombies[i].positionY - zombies[i].size/2) && player.positionY <= (zombies[i].positionY + zombies[i].size/2)){
             for(let i = 0; i < zombies.length; i++){
                 zombies[i].moving = false;
             }
@@ -123,7 +146,7 @@ function updateZombies(){
                 bullets[i].moving = false;
             }
             player.alive = false;
-            text("Game Over", canvasX/2 - 30, canvasY/2 - 20)
+            gameState = "over";
         }
     }
 }
@@ -137,9 +160,12 @@ function updateBullets(){
                 for(let zombie = 0; zombie < zombies.length; zombie++){
                     if(bullets[i].positionX <= (zombies[zombie].positionX + zombies[zombie].size/2) && bullets[i].positionX >= (zombies[zombie].positionX - zombies[zombie].size/2)
                     && bullets[i].positionY >= (zombies[zombie].positionY - zombies[zombie].size/2) && bullets[i].positionY <= (zombies[zombie].positionY + zombies[zombie].size/2)){
+                        zombies[zombie].hp -= 1;
+                        if (zombies[zombie].hp <= 0){
+                            deadZombies.push(zombie);
+                            kills ++;
+                        }
                         deadBullets.push(i);
-                        deadZombies.push(zombie);
-                        kills ++;
                     }
                 }
                 break;
@@ -178,4 +204,8 @@ function removeDeadZombies(){
         zombies.splice(deadZombies[i + count], 1);
         count ++;
     }
+}
+
+function formatTime(milliseconds){
+    return Math.floor(milliseconds/60000) + " : " + Math.floor((milliseconds%60000)/1000);
 }

@@ -1,9 +1,10 @@
 class Option{
-    constructor(positionX, positionY){
+    constructor(positionX, positionY, option){
         this.positionX = positionX;
         this.positionY = positionY;
         this.size = 10;
         this.state = true;
+        this.option = option;
     }
 
     update(){
@@ -19,19 +20,21 @@ class Option{
 
     changeState(){
         this.state = !this.state;
+        options[this.option] = !options[this.option];
     }
 }
 
 class GameOption extends Option{
-    constructor(positionX, positionY, gameMode){
-        super(positionX, positionY);
+    constructor(positionX, positionY, option){
+        super(positionX, positionY, option);
         this.size = 15;
         this.state = false;
-        this.gameMode = gameMode;
+        this.option = option;
     }
 
     changeState(){
-        gameState = this.gameMode;
-        console.log("safas")
+        gameState = this.option;
+        startTime = performance.now();
+        respawnTimer = performance.now();
     }
 }

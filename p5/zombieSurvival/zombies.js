@@ -18,6 +18,9 @@ class BasicZombie{
         this.lookAngle = 0;
         this.moving = true;
         this.size = 20;
+        this.velocity = 1;
+        this.colour = "green";
+        this.hp = 1;
     }
 
     update(playerPositionX, playerPositionY){
@@ -29,7 +32,7 @@ class BasicZombie{
 
     render(){
         push();
-        fill("green")
+        fill(this.colour);
         ellipse(this.positionX, this.positionY, this.size, this.size);
         pop();
     }
@@ -40,9 +43,26 @@ class BasicZombie{
     }
 
     trackPlayer(playerPositionX, playerPositionY){
-        let velocities = calculateVelocities(this.lookAngle, 1);
+        let velocities = calculateVelocities(this.lookAngle, this.velocity);
         this.velocityX = velocities[0];
         this.velocityY = velocities[1];
     }
 
+}
+
+class Sprinter extends BasicZombie{
+    constructor(){
+        super(canvasX, canvasY);
+        this.velocity = 2;
+        this.colour = "purple";
+    }
+}
+
+class BigZombie extends BasicZombie{
+    constructor(){
+        super(canvasX, canvasY);
+        this.velocity = 0.75;
+        this.size = 40;
+        this.hp = 3;
+    }
 }
