@@ -52,10 +52,10 @@ function draw(){
             deadBullets = [];
             deadZombies = [];
             let currnetTime = performance.now();
-            if(currnetTime - respawnTimer > 500){
+            if(currnetTime - respawnTimer > 1000){
                 let randNum = Math.random()
                 if (!options.spZombies || randNum < 0.85){
-                    zombies.push(new BasicZombie(canvasX, canvasY));
+                    zombies.push(new BigZombie(canvasX, canvasY));
                 }
                 else if (randNum < 0.95){
                     zombies.push(new Sprinter(canvasX, canvasY));
@@ -71,7 +71,7 @@ function draw(){
             updateZombies();
             updateBullets();
             textSize(15);
-            text("Wave: " + (formatTime(currentTime)), 10, 25);
+            text("Time: " + (formatTime(currentTime)), 10, 25);
             text("kills: " + kills, 10, 40);
             text("Game Over", canvasX/2 - 30, canvasY/2 - 20);
             return;
@@ -207,5 +207,9 @@ function removeDeadZombies(){
 }
 
 function formatTime(milliseconds){
-    return Math.floor(milliseconds/60000) + " : " + Math.floor((milliseconds%60000)/1000);
+    let minutesTens = Math.floor((milliseconds/600000%10));
+    let minutesUnits = Math.floor((milliseconds/60000%10));
+    let secondsTens = Math.floor(((milliseconds%60000)/10000)%10);
+    let secondsUnits = Math.floor(((milliseconds%60000)/1000)%10);
+    return `${minutesTens}${minutesUnits}:${secondsTens}${secondsUnits}`;
 }
